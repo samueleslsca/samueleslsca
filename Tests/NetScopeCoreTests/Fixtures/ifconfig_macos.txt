@@ -1,0 +1,19 @@
+lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
+	options=1203<RXCSUM,TXCSUM,TXSTATUS,SW_TIMESTAMP>
+	inet 127.0.0.1 netmask 0xff000000
+	inet6 ::1 prefixlen 128
+en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	options=6460<TSO4,TSO6,CHANNEL_IO,PARTIAL_CSUM,ZEROINVERT_CSUM>
+	ether 3c:22:fb:aa:bb:cc
+	inet6 fe80::1c2d:1111:2222:3333%en0 prefixlen 64 secured scopeid 0xb
+	inet 192.168.1.23 netmask 0xffffff00 broadcast 192.168.1.255
+	inet6 2001:db8::23 prefixlen 64 autoconf secured
+	nd6 options=201<PERFORMNUD,DAD>
+	media: autoselect
+	status: active
+en5: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	ether 00:e0:4c:68:00:01
+	media: autoselect (100baseTX <full-duplex>)
+	status: inactive
+utun4: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1420
+	inet 10.8.0.2 --> 10.8.0.1 netmask 0xffffff00

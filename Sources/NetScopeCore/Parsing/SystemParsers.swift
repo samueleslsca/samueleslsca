@@ -77,10 +77,10 @@ public enum RouteTableParser {
     /// Scoped duplicates (flag "I") are ignored when an unscoped default exists.
     public static func defaultGateway(_ routes: [RouteEntry], ipv6: Bool, preferredInterface: String? = nil) -> RouteEntry? {
         let defaults = routes.filter { $0.isDefault && $0.isIPv6 == ipv6 && $0.flags.contains("G") }
+        // A scoped default (flag "I") is the right answer when the caller asks for a specific interface.
+        if let p = preferredInterface, let m = defaults.first(where: { $0.interface == p }) { return m }
         let unscoped = defaults.filter { !$0.flags.contains("I") }
-        let pool = unscoped.isEmpty ? defaults : unscoped
-        if let p = preferredInterface, let m = pool.first(where: { $0.interface == p }) { return m }
-        return pool.first
+        return (unscoped.isEmpty ? defaults : unscoped).first
     }
 }
 
@@ -335,6 +335,8 @@ public enum NettopParser {
                   let bi = UInt64(cols[inIdx]), let bo = UInt64(cols[outIdx]) else { continue }
             guard let nameCol = cols.first(where: { c in
                 guard let dot = c.lastIndex(of: "."), dot != c.startIndex else { return false }
+                // Skip timestamps such as "10:00:00.123456": the process name contains letters.
+                guard c[..<dot].contains(where: \.isLetter), !c.contains(":") || c[..<dot].contains(" ") else { return false }
                 return !c[c.index(after: dot)...].isEmpty && c[c.index(after: dot)...].allSatisfy(\.isNumber)
             }) else { continue }
             let dot = nameCol.lastIndex(of: ".")!

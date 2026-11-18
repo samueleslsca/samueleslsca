@@ -1,0 +1,9 @@
+PING 192.168.1.254 (192.168.1.254): 56 data bytes
+64 bytes from 192.168.1.254: icmp_seq=0 ttl=64 time=3.456 ms
+Request timeout for icmp_seq 1
+64 bytes from 192.168.1.254: icmp_seq=2 ttl=64 time=2.100 ms
+64 bytes from 192.168.1.254: icmp_seq=3 ttl=64 time=4.000 ms
+
+--- 192.168.1.254 ping statistics ---
+4 packets transmitted, 3 packets received, 25.0% packet loss
+round-trip min/avg/max/stddev = 2.100/3.185/4.000/0.800 ms

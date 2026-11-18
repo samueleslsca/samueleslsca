@@ -1,0 +1,4 @@
+Neighbor                             Linklayer Address  Netif Expire    St Flgs Prbs
+fe80::1%en0                          0:24:d4:a:b:c        en0 23h59m58s S  R
+2001:db8::abcd                       3c:22:fb:12:34:56    en0 permanent R
+fe80::99%en0                         (incomplete)         en0 expired   I

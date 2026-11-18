@@ -1,0 +1,9 @@
+{"success":true,"result":[
+ {"id":"ether-3c:22:fb:12:34:56","primary_name":"MacBook-Pro","host_type":"workstation","vendor_name":"Apple, Inc.","active":true,"reachable":true,"last_activity":1763460000,
+  "l2ident":{"id":"3C:22:FB:12:34:56","type":"mac_address"},
+  "l3connectivities":[{"addr":"192.168.1.10","af":"ipv4","active":true,"reachable":true},{"addr":"2001:db8::10","af":"ipv6","active":true}],
+  "access_point":{"connectivity_type":"wifi","rx_rate":125000,"tx_rate":250000,"wifi_information":{"signal":-58,"band":"5G"}}},
+ {"id":"ether-7a:1b:2c:3d:4e:5f","primary_name":"","host_type":"smartphone","vendor_name":"","active":false,"last_activity":1763400000,
+  "l2ident":{"id":"7a:1b:2c:3d:4e:5f","type":"mac_address"},
+  "l3connectivities":[{"addr":"192.168.1.31","af":"ipv4","active":false}]}
+]}

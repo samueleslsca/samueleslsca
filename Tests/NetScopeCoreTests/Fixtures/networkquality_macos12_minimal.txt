@@ -1,0 +1,2 @@
+Warning: some warning line printed before JSON
+{"dl_throughput":95000000,"ul_throughput":20000000,"responsiveness":1200}

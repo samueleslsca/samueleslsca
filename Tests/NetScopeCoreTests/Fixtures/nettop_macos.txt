@@ -1,0 +1,5 @@
+time,,bytes_in,bytes_out,
+10:00:00.123456,launchd.1,0,0,
+10:00:00.123456,mDNSResponder.312,123456,65432,
+10:00:00.123456,Safari Networking.4567,98765432,1234567,
+10:00:00.123456,com.apple.WebKit.Networking.890,5000,1000,

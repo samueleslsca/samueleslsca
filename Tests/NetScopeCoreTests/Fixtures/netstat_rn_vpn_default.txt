@@ -1,0 +1,8 @@
+Routing tables
+
+Internet:
+Destination        Gateway            Flags        Refs      Use   Netif Expire
+0/1                10.8.0.1           UGSc           5        0   utun4
+default            10.8.0.1           UGSc          10        0   utun4
+default            192.168.1.254      UGScI          3        0     en0
+128.0/1            10.8.0.1           UGSc           2        0   utun4

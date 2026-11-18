@@ -1,0 +1,20 @@
+{
+  "base_rtt" : 18.517,
+  "dl_flows" : 12,
+  "dl_responsiveness" : 512.2,
+  "dl_throughput" : 412345678,
+  "end_date" : "18/11/2026, 10:01:12",
+  "il_h2_req_resp" : [ 19.1, 21.0, 18.9, 20.2 ],
+  "il_tcp_handshake_443" : [ 17.8, 18.4 ],
+  "il_tls_handshake" : [ 30.1, 29.4 ],
+  "interface_name" : "en0",
+  "lud_foreign_dl_h2_req_resp" : [ 110.0, 120.0, 130.0 ],
+  "lud_foreign_ul_h2_req_resp" : [ 210.0, 250.0, 230.0 ],
+  "os_version" : "Version 14.6 (Build 23G80)",
+  "responsiveness" : 433.8,
+  "start_date" : "18/11/2026, 10:00:51",
+  "test_endpoint" : "mad-edge-1.example.net",
+  "ul_flows" : 12,
+  "ul_responsiveness" : 301.0,
+  "ul_throughput" : 51234567
+}

@@ -1,0 +1,4 @@
+{"start":{"connected":[{"socket":5,"local_host":"192.168.1.23","local_port":50000,"remote_host":"192.168.1.50","remote_port":5201}],
+ "test_start":{"protocol":"TCP","num_streams":4,"duration":8,"reverse":1}},
+ "end":{"sum_sent":{"seconds":8.0,"bytes":900000000,"bits_per_second":900000000,"retransmits":12},
+        "sum_received":{"seconds":8.0,"bytes":890000000,"bits_per_second":890000000}}}
