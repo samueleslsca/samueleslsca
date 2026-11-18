@@ -1,0 +1,14 @@
+.build/
+.swiftpm/
+*.xcodeproj/
+!project.yml
+DerivedData/
+build/
+dist/
+*.xcuserstate
+xcuserdata/
+__pycache__/
+*.pyc
+.DS_Store
+Agent/*.pem
+Agent/agent_state.json

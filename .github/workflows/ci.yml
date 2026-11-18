@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  core-linux:
+    name: Core tests (Linux)
+    runs-on: ubuntu-24.04
+    container: swift:6.0-noble
+    steps:
+      - uses: actions/checkout@v4
+      - run: apt-get update && apt-get install -y libsqlite3-dev python3
+      - run: swift build --target NetScopeCore
+      - run: swift test
+      - name: Agent tests
+        run: python3 -m unittest discover -s Agent -p "test_*.py" -v
+
+  macos:
+    name: macOS build, tests & audit
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-26]
+    runs-on: ${{ matrix.runner }}
+    continue-on-error: ${{ matrix.runner == 'macos-26' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: |
+          sw_vers; uname -m
+          xcodebuild -version
+          swift --version
+      - name: Phase 0 audit (read-only, runner VM)
+        run: bash scripts/phase0_audit.sh --with-speedtest --privacy || true
+      - name: Build (SwiftPM)
+        run: swift build -c release 2>&1 | tee build.log
+      - name: Unit tests
+        run: swift test 2>&1 | tee test.log
+      - name: Live parser smoke test on real macOS output
+        run: swift run -c release NetScopePro --self-test 2>&1 | tee selftest.log || true
+      - name: Package .app
+        run: bash scripts/build_app.sh
+      - name: Xcode project (XcodeGen)
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -project NetScopePro.xcodeproj -scheme NetScopePro -configuration Debug \
+            -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -40
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: NetScopePro-${{ matrix.runner }}
+          path: |
+            dist/*.zip
+            build.log
+            test.log
+            selftest.log
+          if-no-files-found: ignore
