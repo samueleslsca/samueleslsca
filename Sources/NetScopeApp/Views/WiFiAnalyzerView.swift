@@ -92,11 +92,11 @@ struct WiFiAnalyzerView: View {
                 }.pickerStyle(.segmented).frame(width: 320)
                 channelChart
                 Table(model.neighbors.filter { $0.band == band }) {
-                    TableColumn("SSID") { Text(model.redact($0.ssid ?? "Masqué")) }
-                    TableColumn("Canal") { Text("\($0.channel)") }.width(60)
-                    TableColumn("Largeur") { Text($0.channelWidthMHz.map { "\($0) MHz" } ?? "—") }.width(70)
-                    TableColumn("RSSI") { Text("\($0.rssi) dBm").monospacedDigit() }.width(80)
-                    TableColumn("Sécurité") { n in
+                    TableColumn("SSID") { (n: WiFiNeighbor) in Text(model.redact(n.ssid ?? "Masqué")) }
+                    TableColumn("Canal") { (n: WiFiNeighbor) in Text("\(n.channel)") }.width(60)
+                    TableColumn("Largeur") { (n: WiFiNeighbor) in Text(n.channelWidthMHz.map { "\($0) MHz" } ?? "—") }.width(70)
+                    TableColumn("RSSI") { (n: WiFiNeighbor) in Text("\(n.rssi) dBm").monospacedDigit() }.width(80)
+                    TableColumn("Sécurité") { (n: WiFiNeighbor) in
                         Text(n.security?.rawValue ?? "—").foregroundStyle((n.security?.isObsolete ?? false) || (n.security?.isOpen ?? false) ? .orange : .primary)
                     }
                 }

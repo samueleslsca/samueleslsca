@@ -1,5 +1,6 @@
 #if os(macOS)
 import SwiftUI
+import AppKit
 import UniformTypeIdentifiers
 import NetScopeCore
 
@@ -51,11 +52,11 @@ struct DevicesView: View {
             HStack(alignment: .top, spacing: 16) {
                 Table(filtered, selection: $selected, sortOrder: $sortOrder) {
                     TableColumn("") { (d: NetworkDevice) in Image(systemName: d.category.symbol).foregroundStyle(d.trust == .toReview ? .orange : .accentColor) }.width(24)
-                    TableColumn("Nom", value: \.displayName) { Text(model.redact($0.displayName)) }
+                    TableColumn("Nom", value: \.displayName) { (d: NetworkDevice) in Text(model.redact(d.displayName)) }
                     TableColumn("IP") { (d: NetworkDevice) in Text(model.redact(d.ipv4 ?? d.ipv6.first ?? "—")).monospacedDigit() }.width(120)
                     TableColumn("Catégorie") { (d: NetworkDevice) in Text(d.category.label) }.width(120)
                     TableColumn("État") { (d: NetworkDevice) in Text(d.observationState().rawValue).font(.caption) }.width(150)
-                    TableColumn("Vu", value: \.lastSeen) { Text($0.lastSeen.relative).font(.caption) }.width(110)
+                    TableColumn("Vu", value: \.lastSeen) { (d: NetworkDevice) in Text(d.lastSeen.relative).font(.caption) }.width(110)
                 }
                 .frame(minHeight: 380)
                 if let id = selected, let d = model.inventory.devices.first(where: { $0.id == id }) {
