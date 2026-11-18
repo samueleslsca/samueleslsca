@@ -190,3 +190,23 @@ final class ParserTests: XCTestCase {
         XCTAssertEqual(Units.bytes(1_500_000), "1.50 Mo")
     }
 }
+
+final class SystemProfilerTests: XCTestCase {
+    func testUSBAndBluetooth() {
+        let usb = """
+        {"SPUSBDataType":[{"_name":"USB31Bus","_items":[{"_name":"USB 10/100/1000 LAN","manufacturer":"Realtek","vendor_id":"0x0bda","serial_num":"000001","device_speed":"super_speed"},
+          {"_name":"USB2.0 Hub","_items":[{"_name":"Magic Keyboard","manufacturer":"Apple Inc.","vendor_id":"apple_vendor_id"}],"manufacturer":"Generic"}]}]}
+        """
+        let p = SystemProfilerParser.parse(usb, bus: "USB")
+        XCTAssertEqual(Set(p.map(\.name)), ["USB 10/100/1000 LAN", "USB2.0 Hub", "Magic Keyboard"])
+        XCTAssertEqual(p.first { $0.name.hasPrefix("USB 10") }?.detail["manufacturer"], "Realtek")
+        let bt = """
+        {"SPBluetoothDataType":[{"controller_properties":{"controller_address":"AA"},"device_connected":[{"AirPods Pro":{"device_address":"11:22:33:44:55:66","device_minorType":"Headphones"}}],
+          "device_not_connected":[{"Old Mouse":{"device_address":"66:55:44:33:22:11"}}]}]}
+        """
+        let b = SystemProfilerParser.parse(bt, bus: "Bluetooth")
+        XCTAssertEqual(b.first { $0.name == "AirPods Pro" }?.connected, true)
+        XCTAssertEqual(b.first { $0.name == "Old Mouse" }?.connected, false)
+        XCTAssertTrue(SystemProfilerParser.parse("garbage", bus: "USB").isEmpty)
+    }
+}

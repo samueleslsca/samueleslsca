@@ -311,12 +311,21 @@ public struct ProcessTrafficService: Sendable {
 
     /// Rates between two cumulative samples. Processes absent from either sample are skipped
     /// (we cannot prove their traffic).
-    public static func rates(previous: [ProcessTrafficSample], current: [ProcessTrafficSample], seconds: Double) -> [(process: String, pid: Int?, inBps: Double, outBps: Double)] {
+    public struct ProcessRate: Hashable, Identifiable, Sendable {
+        public var id: String { "\(process).\(pid ?? -1)" }
+        public var process: String
+        public var pid: Int?
+        public var inBps: Double
+        public var outBps: Double
+    }
+
+    public static func rates(previous: [ProcessTrafficSample], current: [ProcessTrafficSample], seconds: Double) -> [ProcessRate] {
         guard seconds > 0 else { return [] }
         let prev = Dictionary(previous.map { ("\($0.process).\($0.pid ?? -1)", $0) }, uniquingKeysWith: { a, _ in a })
         return current.compactMap { c in
             guard let p = prev["\(c.process).\(c.pid ?? -1)"], c.bytesIn >= p.bytesIn, c.bytesOut >= p.bytesOut else { return nil }
-            return (c.process, c.pid, Double(c.bytesIn - p.bytesIn) * 8 / seconds, Double(c.bytesOut - p.bytesOut) * 8 / seconds)
+            return ProcessRate(process: c.process, pid: c.pid, inBps: Double(c.bytesIn - p.bytesIn) * 8 / seconds,
+                               outBps: Double(c.bytesOut - p.bytesOut) * 8 / seconds)
         }.sorted { $0.inBps + $0.outBps > $1.inBps + $1.outBps }
     }
 }

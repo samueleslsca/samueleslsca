@@ -1,0 +1,44 @@
+# XcodeGen spec — `brew install xcodegen && xcodegen generate` creates NetScopePro.xcodeproj.
+# The app target uses the local Swift package for NetScopeCore / NetScopeSystem.
+# Alternatively, open Package.swift directly in Xcode.
+name: NetScopePro
+options:
+  bundleIdPrefix: fr.netscope
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+packages:
+  NetScopeKit:
+    path: .
+targets:
+  NetScopePro:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/NetScopeApp
+        excludes:
+          - "Resources/Info.plist"
+          - "Resources/NetScopePro.entitlements"
+    dependencies:
+      - package: NetScopeKit
+        product: NetScopeCore
+      - package: NetScopeKit
+        product: NetScopeSystem
+    settings:
+      base:
+        PRODUCT_NAME: NetScopePro
+        PRODUCT_BUNDLE_IDENTIFIER: fr.netscope.pro
+        INFOPLIST_FILE: Sources/NetScopeApp/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Sources/NetScopeApp/Resources/NetScopePro.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        SWIFT_VERSION: "5.0"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+schemes:
+  NetScopePro:
+    build:
+      targets:
+        NetScopePro: all
+    run:
+      config: Debug

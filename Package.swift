@@ -14,6 +14,7 @@ let package = Package(
     platforms: [.macOS(.v14)],
     products: [
         .library(name: "NetScopeCore", targets: ["NetScopeCore"]),
+        .library(name: "NetScopeSystem", targets: ["NetScopeSystem"]),
         .executable(name: "NetScopePro", targets: ["NetScopePro"]),
     ],
     targets: [
