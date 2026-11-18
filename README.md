@@ -8,6 +8,7 @@ Application macOS native (Swift / SwiftUI) d’analyse, de surveillance, de diag
 
 | Module | Ce qui est réellement mesuré / fourni |
 |---|---|
+| **MAX BOOST** | Bouton « BOOST MY INTERNET » : 4 profils (MAX SPEED, ULTRA LOW LATENCY, STREAMING & VIDEO, SMART AUTO), recommandations classées par gain, risque et réversibilité, autorisations à 3 niveaux, A/B Baseline → Candidate → Validated, auto-tuning SQM sur OpenWrt avec retour arrière automatique du routeur, restauration, score avant/après, historique — [détails](docs/MAX_BOOST.md) |
 | **Dashboard** | Connexion (interface, IPv4/IPv6, passerelle, DNS, VPN, proxy), qualité Wi-Fi, dernier test, appareils, score global explicable (6 sous-scores, méthode et niveau de confiance) |
 | **Speedtest Pro** | Apple `networkQuality` en JSON (détection des options disponibles selon la version de macOS) : débits, latence au repos et sous charge, réactivité (RPM), TCP/TLS/HTTP. S’y ajoutent le ping ICMP (gigue, pertes) et le DNS. Modes Quick, Full, Gaming, Visio, Streaming, LAN (iperf3) ; annulation ; mode données réduites ; courbe en direct à partir des compteurs de l’interface |
 | **Wi-Fi Analyzer** | CoreWLAN : RSSI, bruit, SNR calculé, canal, bande, largeur, débit de liaison, norme, sécurité ; historique du signal ; scan des voisins (sur demande) ; graphique des canaux ; recommandation de canal et de largeur |
@@ -32,9 +33,9 @@ Chaque valeur affichée porte sa source : **Mesuré**, **Fourni par le routeur**
 
 | Élément | Statut |
 |---|---|
-| `NetScopeCore` (≈ 5 600 lignes : parseurs, moteurs, stockage, routeurs, rapports) | ✅ Compilé (Swift 6.0.3) et **71 tests unitaires passent** sous Linux |
+| `NetScopeCore` (≈ 7 200 lignes : parseurs, moteurs, MAX BOOST, stockage, routeurs, rapports) | ✅ Compilé (Swift 6.0.3) et **95 tests unitaires et d’intégration passent** sous Linux |
 | Agent multi-point (`Agent/`) | ✅ 8 tests d’intégration HTTPS : 7 passent, 1 ignoré (pas de `ping` dans le conteneur de développement) |
-| `NetScopeSystem` + application SwiftUI (≈ 4 300 lignes) | ⚠️ **Non compilé** : le SDK macOS est absent de l’environnement de développement. Écrit avec des API documentées, mais quelques erreurs de compilation sont probables au premier build |
+| `NetScopeSystem` + application SwiftUI (≈ 5 100 lignes) | ⚠️ **Non compilé** : le SDK macOS est absent de l’environnement de développement. Écrit avec des API documentées, mais quelques erreurs de compilation sont probables au premier build |
 | CI GitHub Actions (macOS 15/26 : build, tests, auto-test, `.app`) | ⚠️ Workflow fourni, mais les jobs ont été rejetés sans runner (Actions désactivé ou bloqué par la facturation sur le compte) |
 | Adaptateur Freebox | ⚠️ Implémenté d’après la documentation officielle du SDK, testé avec un transport simulé ; **non validé sur une vraie Freebox** |
 | Paquet `.app` | ❌ Pas produit (requiert macOS) ; `scripts/build_app.sh` le génère sur votre Mac |
@@ -58,6 +59,7 @@ Prérequis : macOS 14 ou ultérieur, Xcode 16 ou ultérieur (Xcode 26 pour le Li
 
 - [Installation et désinstallation](docs/INSTALL.md)
 - [Guide utilisateur](docs/USER_GUIDE.md)
+- [MAX BOOST](docs/MAX_BOOST.md)
 - [Architecture technique](docs/ARCHITECTURE.md)
 - [Matrice de compatibilité (macOS, routeurs)](docs/COMPATIBILITY.md)
 - [Limitations connues](docs/LIMITATIONS.md)

@@ -24,7 +24,7 @@
 | Marque | Statut | API | Fonctions |
 |---|---|---|---|
 | **Freebox** (Free) | ✅ Implémenté, non validé sur matériel réel | API officielle Freebox OS (dev.freebox.fr/sdk/os) | Infos système, firmware, uptime, clients (actifs et historiques, Wi-Fi/Ethernet, signal, débit par client), WAN (état, média, IP, synchro, débit instantané, volumes), configuration Wi-Fi (SSID, bande, canal, largeur, chiffrement, WPS si exposé), réseau invité, **blocage/déblocage par filtrage MAC Wi-Fi** (permission « réglages » requise), journal d’audit |
-| **OpenWrt** | ✅ Lecture seule, non validé sur matériel réel | ubus JSON-RPC (uhttpd-mod-ubus, rpcd, luci-rpc) | Carte, version, uptime, état WAN, baux DHCP |
+| **OpenWrt** | ✅ Implémenté, non validé sur matériel réel | ubus JSON-RPC (uhttpd-mod-ubus, rpcd, luci-rpc) | Carte, version, uptime, état WAN, baux DHCP ; **SQM (sqm-scripts) réglable par MAX BOOST** via `uci apply` avec retour arrière automatique et `uci confirm` (ACL d’écriture uci sur `sqm` requise) |
 | Bouygues Bbox | ⏳ Prévu | API Bbox documentée | — |
 | AVM FRITZ!Box | ⏳ Prévu | TR-064 documenté | — |
 | Ubiquiti UniFi | ⏳ Prévu | UniFi Network Integration API | — |
@@ -33,4 +33,4 @@
 | ASUS | ❌ | Aucune API publique documentée | — |
 | TP-Link | ❌ | Aucune API locale publique (hors Omada) | — |
 
-Fonctions non implémentées pour tous les adaptateurs : restrictions planifiées, règles d’accès avancées, sauvegarde de configuration, réglages QoS/SQM, changement de canal. Elles apparaissent désactivées, avec une explication. Sans routeur compatible, toutes les fonctions locales de l’application restent disponibles.
+Fonctions non implémentées : restrictions planifiées, règles d’accès avancées, sauvegarde complète de configuration, QoS/SQM hors OpenWrt, changement de canal (guidé dans MAX BOOST), priorisation par appareil. Elles apparaissent désactivées, avec une explication. Sans routeur compatible, toutes les fonctions locales de l’application restent disponibles.

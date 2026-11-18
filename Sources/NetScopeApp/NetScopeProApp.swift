@@ -50,13 +50,14 @@ extension AppModel {
 }
 
 enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
-    case dashboard, speedtest, wifi, devices, map, router, traffic, security, diagnostics, history
+    case dashboard, maxBoost, speedtest, wifi, devices, map, router, traffic, security, diagnostics, history
     case bufferbloat, health, multipoint, heatmap, isp, gaming
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .dashboard: return "Dashboard"
+        case .maxBoost: return "MAX BOOST"
         case .speedtest: return "Speedtest"
         case .wifi: return "Wi-Fi Analyzer"
         case .devices: return "Connected Devices"
@@ -78,6 +79,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     var symbol: String {
         switch self {
         case .dashboard: return "gauge.with.dots.needle.67percent"
+        case .maxBoost: return "bolt.circle.fill"
         case .speedtest: return "speedometer"
         case .wifi: return "wifi"
         case .devices: return "laptopcomputer.and.iphone"
@@ -96,7 +98,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    static let main: [SidebarItem] = [.dashboard, .speedtest, .wifi, .devices, .map, .router, .traffic, .security, .diagnostics, .history]
+    static let main: [SidebarItem] = [.dashboard, .maxBoost, .speedtest, .wifi, .devices, .map, .router, .traffic, .security, .diagnostics, .history]
     static let labs: [SidebarItem] = [.bufferbloat, .health, .multipoint, .heatmap, .isp, .gaming]
 }
 
@@ -120,6 +122,7 @@ struct RootView: View {
             Group {
                 switch selection ?? .dashboard {
                 case .dashboard: DashboardView(selection: $selection)
+                case .maxBoost: MaxBoostView()
                 case .speedtest: SpeedtestView()
                 case .wifi: WiFiAnalyzerView()
                 case .devices: DevicesView()

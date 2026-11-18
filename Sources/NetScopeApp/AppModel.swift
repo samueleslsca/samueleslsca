@@ -193,6 +193,10 @@ final class AppModel: ObservableObject {
             rssiHistory.append(TimedValue(t: w.timestamp, v: Double(r)))
             if rssiHistory.count > 1200 { rssiHistory.removeFirst(rssiHistory.count - 1200) }
         }
+        if let tx = w.txRateMbps.value {
+            txRateHistory.append(tx)
+            if txRateHistory.count > 600 { txRateHistory.removeFirst(txRateHistory.count - 600) }
+        }
     }
 
     var isWired: Bool { connection?.primaryInterface?.kind == .ethernet }
@@ -334,6 +338,20 @@ final class AppModel: ObservableObject {
     @Published var agents: [AgentPairing] = []
     @Published var auditLog: [AdminAuditEntry] = []
     @Published var router = RouterState()
+
+    // MARK: MAX BOOST state
+    @Published var txRateHistory: [Double] = []
+    @Published var boostSession: BoostSession?
+    @Published var boostProgress: (BoostPhase, String)?
+    @Published var boostAuthorized: Set<String> = []
+    @Published var boostOptions = BoostOptions()
+    @Published var boostError: String?
+    @Published var boostLive: [ThroughputSample] = []
+    @Published var boostHistory: [BoostSession] = []
+    @Published var boostContention: ContentionReport?
+    @Published var boostDNSBenchmark: [DNSDiagnosticsService.BenchmarkRow] = []
+    @Published var boostTask: Task<Void, Never>?
+    var boostOrchestrator: MaxBoostOrchestrator?
 
     func applyBackgroundTasks() {
         healthTask?.cancel(); healthTask = nil

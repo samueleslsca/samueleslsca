@@ -119,7 +119,8 @@ struct RouterControlView: View {
     var wifiCard: some View {
         Card("Paramètres Wi-Fi rapportés", symbol: "wifi") {
             if let w = model.router.wifi {
-                ForEach(Array(w.networks.enumerated()), id: \.offset) { _, n in
+                ForEach(w.networks.indices, id: \.self) { i in
+                    let n = w.networks[i]
                     KeyValueRow(label: model.redact(n.ssid ?? "?"), value: [n.band, n.channel.map { "canal \($0)" }, n.channelWidthMHz.map { "\($0) MHz" }, n.encryption, n.wpsEnabled == true ? "WPS actif" : nil].compactMap { $0 }.joined(separator: " · "),
                                 provenance: .router(adapter: model.router.adapterID ?? ""))
                 }

@@ -24,4 +24,5 @@
 - **Monitoring** : il s’arrête quand l’application est fermée (pas de démon système). Une coupure plus courte que l’intervalle de vérification peut passer inaperçue.
 - **Application non sandboxée** : NetScope lance des outils système en lecture (`networkQuality`, `ping`, `netstat`, `arp`, `nettop`…), incompatibles avec le bac à sable de l’App Store. La distribution se fait donc hors App Store, signée avec Hardened Runtime.
 - **Sans privilèges administrateur** : toutes les fonctions marchent sans sudo. En contrepartie, pas de capture de paquets ni de mesure radio de bas niveau.
+- **MAX BOOST** : seules deux actions sont automatisables (SQM sur OpenWrt, demande de fermeture d’une application standard) ; tout le reste est guidé. L’écriture Wi-Fi de la Freebox n’est pas implémentée, faute d’avoir pu vérifier sa documentation officielle. Voir [MAX_BOOST.md](MAX_BOOST.md).
 - **Assistant IA** : facultatif. Il nécessite votre propre clé API et une confirmation à chaque envoi ; seules des données masquées sont transmises.
