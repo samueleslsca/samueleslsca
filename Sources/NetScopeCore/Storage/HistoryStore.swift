@@ -8,6 +8,7 @@ import CSQLite
 public enum RecordKind: String, Codable, CaseIterable, Sendable {
     case speedTest, event, healthSample, wifiSample, deviceInventory, auditLog, heatmapProject
     case ispProfile, bufferbloatReport, multipointRun, gamingRun, dnsBenchmark, diagnosticReport, networkProfile
+    case boostSession, boostChange
 }
 
 public enum HistoryStoreError: Error, LocalizedError {

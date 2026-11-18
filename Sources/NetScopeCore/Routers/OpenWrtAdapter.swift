@@ -9,10 +9,10 @@ import FoundationNetworking
 /// left to LuCI until a safe, reversible flow is validated on hardware.
 public actor OpenWrtAdapter: RouterAdapter {
     public static let descriptor = RouterAdapterDescriptor(
-        id: "openwrt", name: "OpenWrt (ubus JSON-RPC)", vendors: ["OpenWrt"], status: .readOnly,
+        id: "openwrt", name: "OpenWrt (ubus JSON-RPC)", vendors: ["OpenWrt"], status: .implemented,
         documentation: "https://openwrt.org/docs/techref/ubus",
-        notes: "Lecture seule : informations système, WAN, baux DHCP. Nécessite uhttpd-mod-ubus et un utilisateur rpcd. Non validé sur matériel réel dans cet environnement.",
-        declaredCapabilities: [.systemInfo, .listClients, .wanStatus])
+        notes: "Informations système, WAN, baux DHCP en lecture. Seule écriture : réglages SQM (sqm-scripts) via rpcd « uci apply » avec retour arrière automatique, uniquement depuis MAX BOOST après autorisation. Nécessite uhttpd-mod-ubus, un utilisateur rpcd (droit d’écriture uci sur « sqm » pour la QoS). Non validé sur matériel réel dans cet environnement.",
+        declaredCapabilities: [.systemInfo, .listClients, .wanStatus, .qos])
 
     static let nullSession = "00000000000000000000000000000000"
     let transport: HTTPTransport
@@ -84,6 +84,71 @@ public actor OpenWrtAdapter: RouterAdapter {
         return WANStatus(state: up.map { $0 ? "up" : "down" }, media: s["device"] as? String, type: s["proto"] as? String,
                          ipv4: addr, ipv6: nil, currentDownBps: nil, currentUpBps: nil, syncDownBps: nil,
                          syncUpBps: nil, totalBytesDown: nil, totalBytesUp: nil)
+    }
+
+    // MARK: SQM (sqm-scripts) — the only write path, used by MAX BOOST after explicit authorization.
+
+    public func readSQM() async throws -> [SQMSettings] {
+        let sid = try requireSession()
+        let r: [String: Any]
+        do { r = try await ubus(sid, "uci", "get", ["config": "sqm"]) }
+        catch RouterError.unsupported { throw RouterError.unsupported("sqm-scripts non installé (aucune configuration « sqm »)") }
+        let values = r["values"] as? [String: Any] ?? [:]
+        return values.compactMap { name, v in
+            guard let o = v as? [String: Any], o[".type"] as? String == "queue" else { return nil }
+            return SQMSettings(section: name, interface: o["interface"] as? String ?? "?", enabled: (o["enabled"] as? String) == "1",
+                               downloadKbps: Int(o["download"] as? String ?? "") ?? 0, uploadKbps: Int(o["upload"] as? String ?? "") ?? 0,
+                               qdisc: o["qdisc"] as? String ?? "cake", script: o["script"] as? String ?? "piece_of_cake.qos")
+        }.sorted { $0.section < $1.section }
+    }
+
+    /// Checks the rpcd ACL for writing the "sqm" config without changing anything.
+    public func canWriteSQM() async -> Bool {
+        guard let sid = session else { return false }
+        let r = try? await ubus(sid, "session", "access", ["scope": "uci", "object": "sqm", "function": "write"])
+        return JSONHelpers.bool(r?["access"]) ?? false
+    }
+
+    /// Stages new values (uncommitted) in this session's uci delta.
+    /// New proposals are restricted to known-good qdisc/scripts and sane rates; a restore writes back the exact previous
+    /// values (charset-checked only), so an original disabled configuration with zero rates can always be restored.
+    public func stageSQM(_ s: SQMSettings, restoring: Bool = false) async throws {
+        guard (1...64).contains(s.section.count), s.section.allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "_") }) else {
+            throw RouterError.unsupported("nom de section SQM invalide")
+        }
+        let safe: (String) -> Bool = { v in v.count <= 40 && v.allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber || "_.-".contains($0)) } }
+        guard safe(s.qdisc), safe(s.script), (0...10_000_000).contains(s.downloadKbps), (0...10_000_000).contains(s.uploadKbps) else {
+            throw RouterError.unsupported("valeurs SQM invalides")
+        }
+        if !restoring {
+            guard !s.enabled || ((100...10_000_000).contains(s.downloadKbps) && (100...10_000_000).contains(s.uploadKbps)) else {
+                throw RouterError.unsupported("débits SQM hors limites")
+            }
+            guard ["cake", "fq_codel"].contains(s.qdisc), ["piece_of_cake.qos", "layer_cake.qos", "simple.qos", "simplest.qos"].contains(s.script) else {
+                throw RouterError.unsupported("file d’attente ou script SQM non autorisé")
+            }
+        }
+        let sid = try requireSession()
+        _ = try await ubus(sid, "uci", "set", ["config": "sqm", "section": s.section,
+                                               "values": ["enabled": s.enabled ? "1" : "0", "download": "\(s.downloadKbps)", "upload": "\(s.uploadKbps)",
+                                                          "qdisc": s.qdisc, "script": s.script]])
+    }
+
+    /// Commits and reloads staged changes; rpcd reverts them automatically unless `confirmApply()` is called within `timeout` seconds.
+    public func applyWithRollback(timeout: Int = 60) async throws {
+        let sid = try requireSession()
+        _ = try await ubus(sid, "uci", "apply", ["rollback": true, "timeout": max(10, min(timeout, 300))])
+    }
+
+    public func confirmApply() async throws {
+        let sid = try requireSession()
+        _ = try await ubus(sid, "uci", "confirm", [:])
+    }
+
+    /// Reachability probe through a fresh HTTP request.
+    public func isReachable() async -> Bool {
+        guard let sid = session else { return false }
+        return (try? await ubus(sid, "system", "board", [:])) != nil
     }
 
     private func requireSession() throws -> String {
